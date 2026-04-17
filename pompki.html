@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valorant Fitness Challenge</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f1015;
+    color: #e8e8e8;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container { max-width: 480px; margin: 0 auto; }
+
+  .logo {
+    text-align: center;
+    padding: 32px 0 24px;
+  }
+  .logo h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+  .logo h1 span { color: #ff4655; }
+  .logo p { font-size: 13px; color: #888; margin-top: 6px; }
+
+  .rules {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .rule {
+    background: #1a1c23;
+    border: 1px solid #2a2d38;
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .rule .val { font-size: 15px; font-weight: 700; color: #fff; }
+  .rule .lbl { font-size: 10px; color: #666; margin-top: 3px; }
+
+  .card {
+    background: #1a1c23;
+    border: 1px solid #2a2d38;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 14px;
+  }
+  .card h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 14px; }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13px; color: #999; margin-bottom: 6px; }
+  .field input[type=number] {
+    width: 100%;
+    background: #0f1015;
+    border: 1px solid #2a2d38;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input[type=number]:focus { border-color: #ff4655; }
+  .field input[type=number]::placeholder { color: #333; }
+
+  .result-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+
+  .match-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 0; }
+  .mbtn {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1.5px solid #2a2d38;
+    background: #0f1015;
+    color: #999;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .mbtn:hover { border-color: #444; color: #ccc; }
+  .mbtn.win-active { background: #0d2a1e; border-color: #1a7a4a; color: #2ecc71; }
+  .mbtn.lose-active { background: #2a0d0d; border-color: #7a1a1a; color: #ff4655; }
+
+  .result-box {
+    background: #ff4655;
+    border-radius: 14px;
+    padding: 28px 20px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .result-box .total { font-size: 72px; font-weight: 800; line-height: 1; color: #fff; }
+  .result-box .unit { font-size: 16px; color: rgba(255,255,255,0.75); margin-top: 6px; }
+  .result-box.zero { background: #1a1c23; border: 1px solid #2a2d38; }
+  .result-box.zero .total { color: #444; }
+  .result-box.zero .unit { color: #444; }
+
+  .breakdown {
+    background: #0f1015;
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 14px;
+  }
+  .brow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 4px 0;
+    color: #777;
+  }
+  .brow.total-row { border-top: 1px solid #2a2d38; margin-top: 6px; padding-top: 10px; color: #ccc; font-weight: 600; }
+  .brow .green { color: #2ecc71; }
+  .brow .red { color: #ff4655; }
+
+  .copy-section { margin-bottom: 14px; }
+  .copy-preview {
+    background: #0f1015;
+    border: 1px solid #2a2d38;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 13px;
+    color: #ccc;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    margin-bottom: 10px;
+    min-height: 80px;
+  }
+  .copy-btn {
+    width: 100%;
+    padding: 14px;
+    background: #ff4655;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .copy-btn:hover { background: #e03040; }
+  .copy-btn:active { transform: scale(0.98); }
+  .copy-btn.copied { background: #1a7a4a; }
+
+  .reset-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid #2a2d38;
+    border-radius: 10px;
+    color: #555;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 32px;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { color: #999; border-color: #444; }
+
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="logo">
+    <h1>VALORANT <span>FITNESS</span></h1>
+    <p>Umierasz w grze — bolujesz w realu</p>
+  </div>
+
+  <div class="rules">
+    <div class="rule"><div class="val">10</div><div class="lbl">za dea</div></div>
+    <div class="rule"><div class="val">-2</div><div class="lbl">kill</div></div>
+    <div class="rule"><div class="val">-1</div><div class="lbl">asysta</div></div>
+    <div class="rule"><div class="val">x0.7</div><div class="lbl">wygrana</div></div>
+    <div class="rule"><div class="val">x1.3</div><div class="lbl">przegrana</div></div>
+  </div>
+
+  <div class="result-box zero" id="result-box">
+    <div class="total" id="total-num">0</div>
+    <div class="unit">pompek</div>
+  </div>
+
+  <div class="card">
+    <h3>Statystyki meczu</h3>
+    <div class="result-row">
+      <div class="field">
+        <label>Deathy (deaths)</label>
+        <input type="number" id="deaths" min="0" placeholder="0" oninput="calc()">
+      </div>
+      <div class="field">
+        <label>Kille</label>
+        <input type="number" id="kills" min="0" placeholder="0" oninput="calc()">
+      </div>
+    </div>
+    <div class="field">
+      <label>Asysty</label>
+      <input type="number" id="assists" min="0" placeholder="0" oninput="calc()">
+    </div>
+    <h3 style="margin-top:4px;">Wynik meczu</h3>
+    <div class="match-btns" style="margin-top:12px;">
+      <button class="mbtn" id="btn-win" onclick="setResult('win')">Wygrana x0.7</button>
+      <button class="mbtn" id="btn-lose" onclick="setResult('lose')">Przegrana x1.3</button>
+    </div>
+    <div class="breakdown" id="breakdown" style="display:none;"></div>
+  </div>
+
+  <div class="copy-section card">
+    <h3>Wyślij na Discorda</h3>
+    <div class="copy-preview" id="discord-text">Uzupełnij statystyki powyżej...</div>
+    <button class="copy-btn" id="copy-btn" onclick="copyText()">Kopiuj wiadomość</button>
+  </div>
+
+  <button class="reset-btn" onclick="resetAll()">Resetuj</button>
+</div>
+
+<script>
+  let matchResult = 'none';
+
+  function setResult(r) {
+    if (matchResult === r) {
+      matchResult = 'none';
+    } else {
+      matchResult = r;
+    }
+    document.getElementById('btn-win').className = 'mbtn' + (matchResult === 'win' ? ' win-active' : '');
+    document.getElementById('btn-lose').className = 'mbtn' + (matchResult === 'lose' ? ' lose-active' : '');
+    calc();
+  }
+
+  function calc() {
+    const deaths = Math.max(0, parseInt(document.getElementById('deaths').value) || 0);
+    const kills = Math.max(0, parseInt(document.getElementById('kills').value) || 0);
+    const assists = Math.max(0, parseInt(document.getElementById('assists').value) || 0);
+
+    const base = deaths * 10;
+    const killRed = kills * 2;
+    const assistRed = assists * 1;
+    const afterRed = Math.max(0, base - killRed - assistRed);
+    const mult = matchResult === 'win' ? 0.7 : matchResult === 'lose' ? 1.3 : 1.0;
+    const total = Math.round(afterRed * mult);
+
+    const box = document.getElementById('result-box');
+    box.className = 'result-box' + (total === 0 ? ' zero' : '');
+    document.getElementById('total-num').textContent = total;
+
+    const bd = document.getElementById('breakdown');
+    if (deaths === 0 && kills === 0 && assists === 0) {
+      bd.style.display = 'none';
+    } else {
+      bd.style.display = 'block';
+      let html = '';
+      html += `<div class="brow"><span>Deaths x10</span><span>${base} pompek</span></div>`;
+      if (killRed > 0) html += `<div class="brow"><span>Kille -${killRed}</span><span class="green">-${killRed}</span></div>`;
+      if (assistRed > 0) html += `<div class="brow"><span>Asysty -${assistRed}</span><span class="green">-${assistRed}</span></div>`;
+      if (matchResult !== 'none') {
+        const ml = matchResult === 'win' ? 'Wygrana x0.7' : 'Przegrana x1.3';
+        const mc = matchResult === 'win' ? 'green' : 'red';
+        html += `<div class="brow"><span>${ml}</span><span class="${mc}">${afterRed} → ${total}</span></div>`;
+      }
+      bd.innerHTML = html;
+    }
+
+    updateDiscord(deaths, kills, assists, base, killRed, assistRed, afterRed, total, mult);
+  }
+
+  function updateDiscord(deaths, kills, assists, base, killRed, assistRed, afterRed, total, mult) {
+    const multLabel = matchResult === 'win' ? 'wygrana (x0.7)' : matchResult === 'lose' ? 'przegrana (x1.3)' : 'brak';
+    if (deaths === 0 && kills === 0 && assists === 0) {
+      document.getElementById('discord-text').textContent = 'Uzupełnij statystyki powyżej...';
+      return;
+    }
+    const text =
+`💀 VALORANT FITNESS CHALLENGE 💀
+━━━━━━━━━━━━━━━━━━━━━
+Deaths: ${deaths} → ${base} pompek
+Kille: ${kills} → -${killRed}
+Asysty: ${assists} → -${assistRed}
+Wynik: ${multLabel}
+━━━━━━━━━━━━━━━━━━━━━
+DO ZROBIENIA: ${total} POMPEK 💪`;
+    document.getElementById('discord-text').textContent = text;
+  }
+
+  function copyText() {
+    const text = document.getElementById('discord-text').textContent;
+    if (text.startsWith('Uzupełnij')) return;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = 'Skopiowano!';
+      btn.className = 'copy-btn copied';
+      setTimeout(() => {
+        btn.textContent = 'Kopiuj wiadomość';
+        btn.className = 'copy-btn';
+      }, 2000);
+    }).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = 'Skopiowano!';
+      btn.className = 'copy-btn copied';
+      setTimeout(() => {
+        btn.textContent = 'Kopiuj wiadomość';
+        btn.className = 'copy-btn';
+      }, 2000);
+    });
+  }
+
+  function resetAll() {
+    document.getElementById('deaths').value = '';
+    document.getElementById('kills').value = '';
+    document.getElementById('assists').value = '';
+    matchResult = 'none';
+    document.getElementById('btn-win').className = 'mbtn';
+    document.getElementById('btn-lose').className = 'mbtn';
+    document.getElementById('breakdown').style.display = 'none';
+    document.getElementById('result-box').className = 'result-box zero';
+    document.getElementById('total-num').textContent = '0';
+    document.getElementById('discord-text').textContent = 'Uzupełnij statystyki powyżej...';
+  }
+</script>
+</body>
+</html>
